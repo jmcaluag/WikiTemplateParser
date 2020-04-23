@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace WikiTemplateScraper
+namespace WikiTemplateParser
 {
     class Program
     {
@@ -12,7 +12,7 @@ namespace WikiTemplateScraper
         static void Main(string[] args)
         {
 
-            using(StreamReader reader = File.OpenText("WikiTableTest.txt"))
+            using(StreamReader reader = File.OpenText("WikiTemplateSeason.txt"))
             {
                 Boolean collectStatus = false; //Ignores all lines until "{{Episode list"
                 while(reader.Peek() > -1)
