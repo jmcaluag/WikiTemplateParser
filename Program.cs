@@ -11,8 +11,9 @@ namespace WikiTemplateParser
 
         static void Main(string[] args)
         {
+            string folderPath = @"C:\Users\Mikey\SoftDev_Projects\CSharp_Projects\WikiEntertainment\WikiTemplateFile\";
 
-            using(StreamReader reader = File.OpenText("WikiTemplateSeason.txt"))
+            using(StreamReader reader = File.OpenText(folderPath + "WikiTemplateSeason.txt"))
             {
                 Boolean collectStatus = false; //Ignores all lines until "{{Episode list"
                 while(reader.Peek() > -1)
