@@ -69,8 +69,8 @@ namespace WikiTemplateParser
         {
             string[] partialLines = readerLine.Split('=');
 
-            string episodeKey = ParseWikiText(partialLines[0].Trim());
-            string episodeValue = ParseWikiText(partialLines[1].Trim());
+            string episodeKey = ParseWikiText(partialLines[0]);
+            string episodeValue = ParseWikiText(partialLines[1]);
 
             AssignValueToEpisode(episode, episodeKey, episodeValue);
         }
@@ -107,7 +107,7 @@ namespace WikiTemplateParser
 
         public static string ParseWikiText(string readerLine) //Extracts values, ignores {, }, [, ]
         {
-            string partialWikiText = readerLine;
+            string partialWikiText = readerLine.Trim();
             
             if(readerLine[0].Equals('|'))
             {
@@ -120,7 +120,7 @@ namespace WikiTemplateParser
             return wikiTextValue;
         }
 
-        public static DateTime ParseWikiDate(string episodeValue) //Argument has to be trimmed
+        public static DateTime ParseWikiDate(string episodeValue) //Value being passed in has to be trimmed
         {
             //Format in the form of: Start date|2016|4|10
             string[] dateValues = episodeValue.Split("|");
