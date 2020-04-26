@@ -116,6 +116,21 @@ namespace WikiTemplateParser
             }
         }
 
+        public static string ParseWikiText(string readerLine) //Extracts values, ignores {, }, [, ]
+        {
+            string partialWikiText = readerLine;
+            
+            if(readerLine[0].Equals('|'))
+            {
+                partialWikiText = readerLine.Substring(1);
+            }
+
+            Regex pattern = new Regex(@"[\w\s\|]+");
+            string wikiTextValue = pattern.Match(partialWikiText).Value.Trim();
+
+            return wikiTextValue;
+        }
+
         public static DateTime ParseWikiDate(string episodeValue)
         {
             //Format in the form of: {{Start date|2016|4|10}}
