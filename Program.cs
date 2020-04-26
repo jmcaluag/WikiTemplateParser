@@ -94,10 +94,10 @@ namespace WikiTemplateParser
                     episode.season = episodeValue;
                     break;
                 case "EpisodeNumber":
-                    episode.episodeNumberOverall = Convert.ToInt32(episodeValue);
+                    episode.episodeNumberOverall = Convert.ToSingle(episodeValue);
                     break;
                 case "EpisodeNumber2":
-                    episode.episodeNumberInSeason = Convert.ToInt32(episodeValue);
+                    episode.episodeNumberInSeason = Convert.ToSingle(episodeValue);
                     break;
                 case "Title":
                     episode.title = episodeValue;
