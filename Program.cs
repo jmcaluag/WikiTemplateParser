@@ -120,6 +120,27 @@ namespace WikiTemplateParser
             return wikiTextValue;
         }
 
+        public static string ParseWikiLink(string readerLine)
+        {
+            //In the format of [[Link location|Link Label]] or [[Link Label]]
+
+            string linkLabel = "";
+
+            if(readerLine.Contains('|'))
+            {
+            string[] partialDetails = readerLine.Split('|');
+            linkLabel = partialDetails[1];
+            Console.WriteLine(linkLabel.Substring(0, linkLabel.Length - 2));
+            }
+            else
+            {
+                linkLabel = readerLine.Substring(readerLine.IndexOf("[") + 2, readerLine.Length - 4);
+                Console.WriteLine(linkLabel);
+            }
+
+            return linkLabel;
+        }
+
         public static DateTime ParseWikiDate(string episodeValue) //Value being passed in has to be trimmed
         {
             //Format in the form of: Start date|2016|4|10
