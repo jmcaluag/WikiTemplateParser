@@ -60,8 +60,7 @@ namespace WikiTemplateParser
         {
             Boolean episodeTemplate = false;
 
-            //Avoids ending the episode at the OriginalAirDate field.
-            episodeTemplate = wikiTemplateLine.Contains("}}") && !wikiTemplateLine.Contains("{{Start date");
+            episodeTemplate = wikiTemplateLine.Equals("}}");
 
             return episodeTemplate;
         }
