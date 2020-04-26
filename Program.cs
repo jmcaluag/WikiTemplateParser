@@ -67,23 +67,12 @@ namespace WikiTemplateParser
 
         public static void CollectEpisodeDetails(Episode episode, string readerLine)
         {
-            string episodeKey = RetrieveEpisodeKey(readerLine);
-            string episodeValue = RetrieveEpisodeValue(readerLine);
+            string[] partialLines = readerLine.Split('=');
+
+            string episodeKey = ParseWikiText(partialLines[0].Trim());
+            string episodeValue = ParseWikiText(partialLines[1].Trim());
 
             AssignValueToEpisode(episode, episodeKey, episodeValue);
-        }
-
-        public static string RetrieveEpisodeKey(string readerLine)
-        {
-            //Divides key and value and removes the leader pipe and space.
-            string episodeKey = readerLine.Split("=")[0].Trim().Substring(2);
-            return episodeKey;
-        }
-
-        public static string RetrieveEpisodeValue(string readerLine)
-        {
-            string episodeValue = readerLine.Split("=")[1].Trim();
-            return episodeValue;
         }
 
         public static void AssignValueToEpisode(Episode episode, string episodeKey, string episodeValue)
@@ -131,14 +120,12 @@ namespace WikiTemplateParser
             return wikiTextValue;
         }
 
-        public static DateTime ParseWikiDate(string episodeValue)
+        public static DateTime ParseWikiDate(string episodeValue) //Argument has to be trimmed
         {
-            //Format in the form of: {{Start date|2016|4|10}}
+            //Format in the form of: Start date|2016|4|10
             string[] dateValues = episodeValue.Split("|");
-            Regex pattern = new Regex(@"\d+"); //Ignores }} at the end for day value.
-            int day = Convert.ToInt32(pattern.Match(dateValues[3]).Value);
 
-            return new DateTime(Convert.ToInt32(dateValues[1]), Convert.ToInt32(dateValues[2]), day);
+            return new DateTime(Convert.ToInt32(dateValues[1]), Convert.ToInt32(dateValues[2]), Convert.ToInt32(dateValues[3]));
         }
 
         //Method for testing: Prints all details
