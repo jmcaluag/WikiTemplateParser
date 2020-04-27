@@ -115,10 +115,21 @@ namespace WikiTemplateParser
             }
             else if ((partialWikiText.Contains("{{") && partialWikiText.Contains("}}")) || (partialWikiText.Contains("[[") && partialWikiText.Contains("]]")))
             {
+                string wikiTextValue = "";
                 Regex pattern = new Regex(@"(?<=\[\[|\{\{).*(?=\]\]|\}\})");
-                string wikiTextValue = pattern.Match(partialWikiText).Value.Trim();
 
-                return wikiTextValue;
+                if(partialWikiText.Contains("[["))
+                {
+                    wikiTextValue = pattern.Match(partialWikiText).Value.Trim();
+
+                    return ParseWikiLink(wikiTextValue);
+                }
+                else
+                {
+                    wikiTextValue = pattern.Match(partialWikiText).Value.Trim();
+                    return wikiTextValue;
+                }
+
             }
             else
             {
