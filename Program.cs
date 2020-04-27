@@ -105,40 +105,45 @@ namespace WikiTemplateParser
             }
         }
 
-        public static string ParseWikiText(string readerLine) //Extracts values, ignores {, }, [, ]
+        public static string ParseWikiText(string readerLine) //Extracts values, ignores {, }, [, ].
         {
             string partialWikiText = readerLine.Trim();
             
-            if(readerLine[0].Equals('|'))
+            if(partialWikiText[0].Equals('|')) //Looks for Episode value.
             {
-                partialWikiText = readerLine.Substring(1);
+                return readerLine.Substring(2).Trim();
             }
+            else if ((partialWikiText.Contains("{{") && partialWikiText.Contains("}}")) || (partialWikiText.Contains("[[") && partialWikiText.Contains("]]")))
+            {
+                Regex pattern = new Regex(@"(?<=\[\[|\{\{).*(?=\]\]|\}\})");
+                string wikiTextValue = pattern.Match(partialWikiText).Value.Trim();
 
-            Regex pattern = new Regex(@"[\w\s\|]+");
-            string wikiTextValue = pattern.Match(partialWikiText).Value.Trim();
-
-            return wikiTextValue;
+                return wikiTextValue;
+            }
+            else
+            {
+                return readerLine.Trim();
+            }
         }
 
-        public static string ParseWikiLink(string readerLine)
+        public static string ParseWikiLink(string readerLine) //Not Implemented yet!
         {
-            //In the format of [[Link location|Link Label]] or [[Link Label]]
+            //In the format of "Link location|Link Label" or "Link Label"
 
             string linkLabel = "";
 
             if(readerLine.Contains('|'))
             {
-            string[] partialDetails = readerLine.Split('|');
-            linkLabel = partialDetails[1];
-            Console.WriteLine(linkLabel.Substring(0, linkLabel.Length - 2));
+                string[] partialDetails = readerLine.Split('|');
+                linkLabel = partialDetails[1];
+
+                return linkLabel;
             }
             else
             {
-                linkLabel = readerLine.Substring(readerLine.IndexOf("[") + 2, readerLine.Length - 4);
-                Console.WriteLine(linkLabel);
+                return linkLabel;
             }
 
-            return linkLabel;
         }
 
         public static DateTime ParseWikiDate(string episodeValue) //Value being passed in has to be trimmed
