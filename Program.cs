@@ -11,8 +11,9 @@ namespace WikiTemplateParser
 
         static void Main(string[] args)
         {
+            string folderPath = @"C:\Users\Mikey\SoftDev_Projects\CSharp_Projects\WikiEntertainment\WikiTemplateFile\";
 
-            using(StreamReader reader = File.OpenText("WikiTemplateSeason.txt"))
+            using(StreamReader reader = File.OpenText(folderPath + "WikiTemplateSeason.txt"))
             {
                 Boolean collectStatus = false; //Ignores all lines until "{{Episode list"
                 while(reader.Peek() > -1)
@@ -59,31 +60,19 @@ namespace WikiTemplateParser
         {
             Boolean episodeTemplate = false;
 
-            //Avoids ending the episode at the OriginalAirDate field.
-            episodeTemplate = wikiTemplateLine.Contains("}}") && !wikiTemplateLine.Contains("{{Start date");
+            episodeTemplate = wikiTemplateLine.Equals("}}");
 
             return episodeTemplate;
         }
 
         public static void CollectEpisodeDetails(Episode episode, string readerLine)
         {
-            string episodeKey = RetrieveEpisodeKey(readerLine);
-            string episodeValue = RetrieveEpisodeValue(readerLine);
+            string[] partialLines = readerLine.Split('=');
+
+            string episodeKey = ParseWikiText(partialLines[0]);
+            string episodeValue = ParseWikiText(partialLines[1]);
 
             AssignValueToEpisode(episode, episodeKey, episodeValue);
-        }
-
-        public static string RetrieveEpisodeKey(string readerLine)
-        {
-            //Divides key and value and removes the leader pipe and space.
-            string episodeKey = readerLine.Split("=")[0].Trim().Substring(2);
-            return episodeKey;
-        }
-
-        public static string RetrieveEpisodeValue(string readerLine)
-        {
-            string episodeValue = readerLine.Split("=")[1].Trim();
-            return episodeValue;
         }
 
         public static void AssignValueToEpisode(Episode episode, string episodeKey, string episodeValue)
@@ -94,10 +83,10 @@ namespace WikiTemplateParser
                     episode.season = episodeValue;
                     break;
                 case "EpisodeNumber":
-                    episode.episodeNumberOverall = Convert.ToInt32(episodeValue);
+                    episode.episodeNumberOverall = Convert.ToSingle(episodeValue);
                     break;
                 case "EpisodeNumber2":
-                    episode.episodeNumberInSeason = Convert.ToInt32(episodeValue);
+                    episode.episodeNumberInSeason = Convert.ToSingle(episodeValue);
                     break;
                 case "Title":
                     episode.title = episodeValue;
@@ -116,14 +105,53 @@ namespace WikiTemplateParser
             }
         }
 
-        public static DateTime ParseWikiDate(string episodeValue)
+        public static string ParseWikiText(string readerLine) //Extracts values, ignores {, }, [, ].
         {
-            //Format in the form of: {{Start date|2016|4|10}}
-            string[] dateValues = episodeValue.Split("|");
-            Regex pattern = new Regex(@"\d+"); //Ignores }} at the end for day value.
-            int day = Convert.ToInt32(pattern.Match(dateValues[3]).Value);
+            string partialWikiText = readerLine.Trim();
+            
+            if(partialWikiText[0].Equals('|')) //Looks for Episode value.
+            {
+                return readerLine.Substring(2).Trim();
+            }
+            else if ((partialWikiText.Contains("{{") && partialWikiText.Contains("}}")) || (partialWikiText.Contains("[[") && partialWikiText.Contains("]]")))
+            {
+                Regex pattern = new Regex(@"(?<=\[\[|\{\{).*(?=\]\]|\}\})");
+                string wikiTextValue = pattern.Match(partialWikiText).Value.Trim();
 
-            return new DateTime(Convert.ToInt32(dateValues[1]), Convert.ToInt32(dateValues[2]), day);
+                return wikiTextValue;
+            }
+            else
+            {
+                return readerLine.Trim();
+            }
+        }
+
+        public static string ParseWikiLink(string readerLine) //Not Implemented yet!
+        {
+            //In the format of "Link location|Link Label" or "Link Label"
+
+            string linkLabel = "";
+
+            if(readerLine.Contains('|'))
+            {
+                string[] partialDetails = readerLine.Split('|');
+                linkLabel = partialDetails[1];
+
+                return linkLabel;
+            }
+            else
+            {
+                return linkLabel;
+            }
+
+        }
+
+        public static DateTime ParseWikiDate(string episodeValue) //Value being passed in has to be trimmed
+        {
+            //Format in the form of: Start date|2016|4|10
+            string[] dateValues = episodeValue.Split("|");
+
+            return new DateTime(Convert.ToInt32(dateValues[1]), Convert.ToInt32(dateValues[2]), Convert.ToInt32(dateValues[3]));
         }
 
         //Method for testing: Prints all details
