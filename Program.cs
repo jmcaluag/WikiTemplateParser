@@ -1,4 +1,6 @@
-﻿using System;
+﻿//TO DO: Fix CheckEpisodeDetail Method
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -24,7 +26,7 @@ namespace WikiTemplateParser
 
         public static void startParser(string folderPath)
         {
-            using(StreamReader reader = File.OpenText(folderPath + "WikiTemplateSeason.txt"))
+            using (StreamReader reader = File.OpenText(folderPath + "WikiTemplateSeason.txt"))
             {
                 Boolean collectStatus = false; //Ignores all lines until "{{Episode list"
                 while(reader.Peek() > -1)
@@ -32,17 +34,21 @@ namespace WikiTemplateParser
                 {
                     string currentLine = reader.ReadLine();
                     
-                    if(FindEpisode(currentLine))
+                    if (FindEpisode(currentLine)) //Finds the beginning of an Episode and switches "on" the CollectEpisodeDetails method.
                     {
                         seasonList.Add(new Episode());
                         collectStatus = true;
                     }
-                    else if(FindEndEpisode(currentLine))
+                    else if (FindEndEpisode(currentLine)) //Finds the end of an Episode and switches "off" the CollectEpisodeDetails method.
                     {
                         collectStatus = false;
                     }
                     else if (collectStatus)
                     {
+                        if (CheckEpisodeDetail(currentLine))
+                        {
+                            break;
+                        }
                         CollectEpisodeDetails(seasonList[seasonList.Count -1], currentLine);
                     }
                 }
@@ -52,9 +58,7 @@ namespace WikiTemplateParser
         //Finds an episode Block
         public static Boolean FindEpisode(string wikiTemplateLine)
         {
-            Boolean episodeTemplate = false;
-
-            episodeTemplate = wikiTemplateLine.Contains("{{Episode list");
+            Boolean episodeTemplate = wikiTemplateLine.Contains("{{Episode list");
 
             return episodeTemplate;
         }
@@ -62,11 +66,17 @@ namespace WikiTemplateParser
         //Finds the end of the episode block
         public static Boolean FindEndEpisode(string wikiTemplateLine)
         {
-            Boolean episodeTemplate = false;
-
-            episodeTemplate = wikiTemplateLine.Equals("}}");
+            Boolean episodeTemplate = wikiTemplateLine.Equals("}}");
 
             return episodeTemplate;
+        }
+
+        public static Boolean CheckEpisodeDetail(string wikiTemplateLine)
+        {
+            //Ignores <hr> tags and other non-episode details
+
+            Boolean validEpisodeDetail = !wikiTemplateLine.Trim()[0].Equals('|');
+            return validEpisodeDetail;
         }
 
         public static void CollectEpisodeDetails(Episode episode, string readerLine)
@@ -81,7 +91,7 @@ namespace WikiTemplateParser
 
         public static void AssignValueToEpisode(Episode episode, string episodeKey, string episodeValue)
         {
-            switch(episodeKey)
+            switch (episodeKey)
             {
                 case "1":
                     episode.season = episodeValue;
