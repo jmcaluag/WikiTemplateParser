@@ -13,6 +13,17 @@ namespace WikiTemplateParser
         {
             string folderPath = @"C:\Users\Mikey\SoftDev_Projects\CSharp_Projects\WikiEntertainment\WikiTemplateFile\";
 
+            startParser(folderPath);
+
+            Console.WriteLine("Testing for stability: {0}", seasonList.Count);
+            Console.Write("Enter episode number: ");
+            string episodeInput = Console.ReadLine();
+            ShowMeEpisodeDetails(Convert.ToInt32(episodeInput) - 1);
+            
+        }
+
+        public static void startParser(string folderPath)
+        {
             using(StreamReader reader = File.OpenText(folderPath + "WikiTemplateSeason.txt"))
             {
                 Boolean collectStatus = false; //Ignores all lines until "{{Episode list"
@@ -35,14 +46,7 @@ namespace WikiTemplateParser
                         CollectEpisodeDetails(seasonList[seasonList.Count -1], currentLine);
                     }
                 }
-
             }
-
-            Console.WriteLine("Testing for stability: {0}", seasonList.Count);
-            Console.Write("Enter episode number: ");
-            string episodeInput = Console.ReadLine();
-            ShowMeEpisodeDetails(Convert.ToInt32(episodeInput) - 1);
-            
         }
 
         //Finds an episode Block
@@ -109,7 +113,7 @@ namespace WikiTemplateParser
         {
             string partialWikiText = readerLine.Trim();
             
-            if(partialWikiText[0].Equals('|')) //Looks for Episode value.
+            if(partialWikiText[0].Equals('|')) //Looks for Episode value substring.
             {
                 return readerLine.Substring(2).Trim();
             }
