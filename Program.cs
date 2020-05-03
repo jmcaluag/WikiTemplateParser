@@ -1,6 +1,4 @@
-﻿//TO DO: Fix CheckEpisodeDetail Method
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -47,7 +45,9 @@ namespace WikiTemplateParser
                     {
                         if (CheckEpisodeDetail(currentLine))
                         {
-                            break;
+                            //Ignores <hr> tags and other non-episode details under the collectStatus of "true".
+
+                            continue;
                         }
                         CollectEpisodeDetails(seasonList[seasonList.Count -1], currentLine);
                     }
@@ -73,9 +73,8 @@ namespace WikiTemplateParser
 
         public static Boolean CheckEpisodeDetail(string wikiTemplateLine)
         {
-            //Ignores <hr> tags and other non-episode details
-
-            Boolean validEpisodeDetail = !wikiTemplateLine.Trim()[0].Equals('|');
+            string readerLine = wikiTemplateLine.Trim();
+            Boolean validEpisodeDetail = !readerLine[0].Equals('|');
             return validEpisodeDetail;
         }
 
