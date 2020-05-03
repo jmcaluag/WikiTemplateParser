@@ -13,30 +13,7 @@ namespace WikiTemplateParser
         {
             string folderPath = @"C:\Users\Mikey\SoftDev_Projects\CSharp_Projects\WikiEntertainment\WikiTemplateFile\";
 
-            using(StreamReader reader = File.OpenText(folderPath + "WikiTemplateSeason.txt"))
-            {
-                Boolean collectStatus = false; //Ignores all lines until "{{Episode list"
-                while(reader.Peek() > -1)
-
-                {
-                    string currentLine = reader.ReadLine();
-                    
-                    if(FindEpisode(currentLine))
-                    {
-                        seasonList.Add(new Episode());
-                        collectStatus = true;
-                    }
-                    else if(FindEndEpisode(currentLine))
-                    {
-                        collectStatus = false;
-                    }
-                    else if (collectStatus)
-                    {
-                        CollectEpisodeDetails(seasonList[seasonList.Count -1], currentLine);
-                    }
-                }
-
-            }
+            startParser(folderPath);
 
             Console.WriteLine("Testing for stability: {0}", seasonList.Count);
             Console.Write("Enter episode number: ");
@@ -45,12 +22,43 @@ namespace WikiTemplateParser
             
         }
 
+        public static void startParser(string folderPath)
+        {
+            using (StreamReader reader = File.OpenText(folderPath + "WikiTemplateSeason.txt"))
+            {
+                Boolean collectStatus = false; //Ignores all lines until "{{Episode list"
+                while(reader.Peek() > -1)
+
+                {
+                    string currentLine = reader.ReadLine();
+                    
+                    if (FindEpisode(currentLine)) //Finds the beginning of an Episode and switches "on" the CollectEpisodeDetails method.
+                    {
+                        seasonList.Add(new Episode());
+                        collectStatus = true;
+                    }
+                    else if (FindEndEpisode(currentLine)) //Finds the end of an Episode and switches "off" the CollectEpisodeDetails method.
+                    {
+                        collectStatus = false;
+                    }
+                    else if (collectStatus)
+                    {
+                        if (CheckEpisodeDetail(currentLine))
+                        {
+                            //Ignores <hr> tags and other non-episode details under the collectStatus of "true".
+
+                            continue;
+                        }
+                        CollectEpisodeDetails(seasonList[seasonList.Count -1], currentLine);
+                    }
+                }
+            }
+        }
+
         //Finds an episode Block
         public static Boolean FindEpisode(string wikiTemplateLine)
         {
-            Boolean episodeTemplate = false;
-
-            episodeTemplate = wikiTemplateLine.Contains("{{Episode list");
+            Boolean episodeTemplate = wikiTemplateLine.Contains("{{Episode list");
 
             return episodeTemplate;
         }
@@ -58,11 +66,16 @@ namespace WikiTemplateParser
         //Finds the end of the episode block
         public static Boolean FindEndEpisode(string wikiTemplateLine)
         {
-            Boolean episodeTemplate = false;
-
-            episodeTemplate = wikiTemplateLine.Equals("}}");
+            Boolean episodeTemplate = wikiTemplateLine.Equals("}}");
 
             return episodeTemplate;
+        }
+
+        public static Boolean CheckEpisodeDetail(string wikiTemplateLine)
+        {
+            string readerLine = wikiTemplateLine.Trim();
+            Boolean validEpisodeDetail = !readerLine[0].Equals('|');
+            return validEpisodeDetail;
         }
 
         public static void CollectEpisodeDetails(Episode episode, string readerLine)
@@ -77,7 +90,7 @@ namespace WikiTemplateParser
 
         public static void AssignValueToEpisode(Episode episode, string episodeKey, string episodeValue)
         {
-            switch(episodeKey)
+            switch (episodeKey)
             {
                 case "1":
                     episode.season = episodeValue;
@@ -109,16 +122,27 @@ namespace WikiTemplateParser
         {
             string partialWikiText = readerLine.Trim();
             
-            if(partialWikiText[0].Equals('|')) //Looks for Episode value.
+            if(partialWikiText[0].Equals('|')) //Looks for Episode value substring.
             {
                 return readerLine.Substring(2).Trim();
             }
             else if ((partialWikiText.Contains("{{") && partialWikiText.Contains("}}")) || (partialWikiText.Contains("[[") && partialWikiText.Contains("]]")))
             {
+                string wikiTextValue = "";
                 Regex pattern = new Regex(@"(?<=\[\[|\{\{).*(?=\]\]|\}\})");
-                string wikiTextValue = pattern.Match(partialWikiText).Value.Trim();
 
-                return wikiTextValue;
+                if(partialWikiText.Contains("[["))
+                {
+                    wikiTextValue = pattern.Match(partialWikiText).Value.Trim();
+
+                    return ParseWikiLink(wikiTextValue);
+                }
+                else
+                {
+                    wikiTextValue = pattern.Match(partialWikiText).Value.Trim();
+                    return wikiTextValue;
+                }
+
             }
             else
             {
