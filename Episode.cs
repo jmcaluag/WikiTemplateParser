@@ -9,32 +9,11 @@ class Episode
     public string titleKanji { get; set; }
     public DateTime originalAirDate { get; set; }
 
-    public Episode(){}
-
-    //English Series Episode Format
-    public Episode(string season, int seriesEpisodeNumber, int episodeNumber, string title, DateTime originalAirDate)
+    public Episode()
     {
-        this.season = season;
-        this.episodeNumberOverall = seriesEpisodeNumber;
-        this.episodeNumberInSeason = episodeNumber;
-        this.title = title;
-        this.originalAirDate = originalAirDate;
-
         //Null valued
         this.titleRomaji = null;
         this.titleKanji = null;
-    }
-
-    //Japanese Series Episode Format
-    public Episode(string season, int seriesEpisodeNumber, int episodeNumber, string title, string titleRomaji, string titleKanji, DateTime originalAirDate)
-    {
-        this.season = season;
-        this.episodeNumberOverall = seriesEpisodeNumber;
-        this.episodeNumberInSeason = episodeNumber;
-        this.title = title;
-        this.titleRomaji = titleRomaji;
-        this.titleKanji = titleKanji;
-        this.originalAirDate = originalAirDate;
     }
 
 

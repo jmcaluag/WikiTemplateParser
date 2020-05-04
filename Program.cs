@@ -121,17 +121,21 @@ namespace WikiTemplateParser
         public static string ParseWikiText(string readerLine) //Extracts values, ignores {, }, [, ].
         {
             string partialWikiText = readerLine.Trim();
-            
-            if(partialWikiText[0].Equals('|')) //Looks for Episode value substring.
+
+            if(partialWikiText.Length == 0)
+            {
+                return null;
+            }
+            else if(partialWikiText[0].Equals('|')) //Looks for Episode value substring.
             {
                 return readerLine.Substring(2).Trim();
             }
             else if ((partialWikiText.Contains("{{") && partialWikiText.Contains("}}")) || (partialWikiText.Contains("[[") && partialWikiText.Contains("]]")))
             {
                 string wikiTextValue = "";
-                Regex pattern = new Regex(@"(?<=\[\[|\{\{).*(?=\]\]|\}\})");
+                Regex pattern = new Regex(@"(?<=\[\[|\{\{).*?(?=\]\]|\}\})");
 
-                if(partialWikiText.Contains("[["))
+                if(partialWikiText.Contains("[[") && !partialWikiText.Contains("Start date"))
                 {
                     wikiTextValue = pattern.Match(partialWikiText).Value.Trim();
 
@@ -187,7 +191,7 @@ namespace WikiTemplateParser
             Console.WriteLine("Title: {0}", seasonList[episodeNumber].title);
             Console.WriteLine("Title Romaji: {0}", seasonList[episodeNumber].titleRomaji);
             Console.WriteLine("Title Kanji: {0}", seasonList[episodeNumber].titleKanji);
-            Console.WriteLine("Date: {0}", seasonList[episodeNumber].originalAirDate);
+            Console.WriteLine("Date: {0}", seasonList[episodeNumber].originalAirDate.GetDateTimeFormats('d'));
         }
     }
 }
