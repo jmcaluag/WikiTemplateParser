@@ -47,9 +47,9 @@ namespace WikiTemplateParser
                         {
                             //Ignores <hr> tags and other non-episode details under the collectStatus of "true".
 
-                            continue;
+                            CollectEpisodeDetails(seasonList[seasonList.Count -1], currentLine);
                         }
-                        CollectEpisodeDetails(seasonList[seasonList.Count -1], currentLine);
+                        
                     }
                 }
             }
@@ -74,7 +74,17 @@ namespace WikiTemplateParser
         public static Boolean CheckEpisodeDetail(string wikiTemplateLine)
         {
             string readerLine = wikiTemplateLine.Trim();
-            Boolean validEpisodeDetail = !readerLine[0].Equals('|');
+            Boolean validEpisodeDetail = false;
+            
+            if (readerLine.Equals(""))
+            {
+                validEpisodeDetail = false;
+            }
+            else if(readerLine[0].Equals('|'))
+            {
+                validEpisodeDetail = true;
+            }
+
             return validEpisodeDetail;
         }
 
