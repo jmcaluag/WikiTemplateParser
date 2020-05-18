@@ -1,5 +1,5 @@
 # WikiTemplate Parser
-This program works with the WikiResRequest program.  It uses the output from the WikiRestRequest (a text file) and parses the contents (which is in Wikipedia's Template format) and gathers episode details and stores them in list in runtime.
+This program is part of a larger program and project.  This program works with the WikiResRequest program.  It uses the output from the WikiRestRequest (a text file) and parses the contents (which is in Wikipedia's Template format) and gathers episode details and stores them in list in runtime.
 
 This program is a practice in the following topics:
 * File reading.
